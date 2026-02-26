@@ -1,5 +1,8 @@
-import requests, json
-from config import CLIENT_ID, ACCESS_TOKEN
+import requests, json, os
+from .config import CLIENT_ID, ACCESS_TOKEN
+
+def getNumBaseImages():
+    return len(os.listdir("./base_imgs/"))
 
 def getTopNGamesJSON(n):
     """Returns JSON of top n number games from IGDB based on their rating."""
