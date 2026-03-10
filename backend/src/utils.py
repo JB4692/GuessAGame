@@ -51,8 +51,9 @@ def createGameJSONFile(game_data, cover_data):
 
     for i in range(0, len(game_data)):
         crop_img_names = []
+        count = 0
         for j in range(128, 1080, 128):
-            crop_img_names.append(f"./crop_imgs/{cover_data[i]["image_id"]}_cropped_{j}.jpg")
+            crop_img_names.append(f"./crop_imgs/{cover_data[i]["image_id"]}_cropped_{count}.jpg")
         
         json_object = {
             "game_id" : game_data[i]["id"],

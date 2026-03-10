@@ -1,6 +1,6 @@
 interface Props {
     title: string;
-    answer: string;
+    answer: string | undefined;
 }
 const Guess = ({ title, answer }: Props) => {
     let isCorrectAnswer: boolean = title === answer;
