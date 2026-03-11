@@ -1,26 +1,47 @@
 from src.utils import *
-from src.images import *
-"""
-1. get get Top X games
-2. get covers for each game
-3. Download cover image
-4. create the json file of all the games
-5. Load json file
-6. create images from base images and save them.
-"""
-n = getNumBaseImages()
-print(n)
+from database import DBManager
 
-# game_json_list = getTopNGamesJSON(5)
+dbm = DBManager()
 
-# cover_json_list = []
+gameData = getTopNGamesJSON(3)
+query = """INSERT INTO games (gameId ,
+                              coverUrl,
+                              title ,
+                              genre,
+                              platform ,
+                              releaseDate,
+                              summary ,
+                              rating)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT DO NOTHING""" 
 
-# for i, game in enumerate(game_json_list):
-#     cover_json = getCoverJSONByID(game["cover"])
+for game in gameData:
+    print(game)
+
+    releaseDateData = game["release_dates"]
+    platformsData = game["platforms"]
+    genresData = game["genres"]
+    print(releaseDateData, type(releaseDateData))
+    print(platformsData)
+    print(genresData)
+
+    releaseDateHumanReadable = getEarliestReleaseDate(releaseDateData)
+
+    platformsList = getPlatforms(platformsData) 
+    platforms = ", ".join(platformsList)
+
+    genresList = getGenres(genresData)
+    genres = ", ".join(genresList)
+
+    imgId = getCoverJSONByID(game["cover"])
+    coverUrl = getCoverURL(game["cover"])
+
+    params = (game["id"], 
+              coverUrl, 
+              game["name"], 
+              genres, 
+              platforms, 
+              releaseDateHumanReadable, game["summary"], 
+              game["rating"])
     
-#     downloadCoverImage1080p(cover_json[0]["image_id"])
-#     # print(f"Downloaded: {game["name"]}")
-
-#     cover_json_list.append(cover_json[0])
-
-# createGameJSONFile(game_json_list, cover_json_list)
+    dbm.execute(query, params)

@@ -4,6 +4,7 @@ from .config import CLIENT_ID, ACCESS_TOKEN
 def getNumBaseImages():
     return len(os.listdir("./base_imgs/"))
 
+
 def getTopNGamesJSON(n):
     """Returns JSON of top n number games from IGDB based on their rating."""
 
@@ -18,6 +19,7 @@ def getTopNGamesJSON(n):
     game_data = response.json()
 
     return game_data
+
 
 def getCoverJSONByID(id):
     """
@@ -35,6 +37,69 @@ def getCoverJSONByID(id):
     cover_data = response.json()
 
     return cover_data
+
+
+def getEarliestReleaseDate(ids: list[int]) -> str:
+    min_id: int = min(ids)
+    base_url = "https://api.igdb.com/v4/release_dates"
+    data = {'headers': {'Client-ID': f'{CLIENT_ID}', 'Authorization': f'Bearer {ACCESS_TOKEN}'},
+                'data': f'fields *; \
+                            where id = {min_id};'}
+
+    response = requests.post(base_url, **data)
+    release_dates = response.json()
+
+    return release_dates[0]["human"]
+
+
+def getPlatforms(ids: list[int]) -> list[str]:
+    listOfPlatforms = []
+    
+    for id in ids:
+        baseUrl = "https://api.igdb.com/v4/platforms"
+        data = {'headers': {'Client-ID': f'{CLIENT_ID}', 'Authorization': f'Bearer {ACCESS_TOKEN}'},
+                'data': f'fields *; \
+                        where id = {id};'}
+
+        response = requests.post(baseUrl, **data)
+        platformJson = response.json()
+        listOfPlatforms.append(platformJson[0]["name"])
+    
+    return listOfPlatforms
+
+
+def getGenres(ids: list[int]) -> list[str]:
+    listOfGenres = []
+    
+    for id in ids:
+        baseUrl = "https://api.igdb.com/v4/genres"
+        data = {'headers': {'Client-ID': f'{CLIENT_ID}', 'Authorization': f'Bearer {ACCESS_TOKEN}'},
+                'data': f'fields *; \
+                        where id = {id};'}
+
+        response = requests.post(baseUrl, **data)
+        platformJson = response.json()
+        listOfGenres.append(platformJson[0]["name"])
+    
+    return listOfGenres
+
+
+def getCoverURL(id: int) -> str:
+    """
+    Returns the URL to the game's cover art in 1080p 
+    """
+
+    base_url = "https://api.igdb.com/v4/covers"
+    data = {'headers': {'Client-ID': f'{CLIENT_ID}', 'Authorization': f'Bearer {ACCESS_TOKEN}'},
+                'data': f'fields image_id; \
+                            where id = {id};'}
+
+    response = requests.post(base_url, **data)
+    cover_data = response.json()
+
+    return f"https://images.igdb.com/igdb/image/upload/t_1080p/{cover_data[0]["image_id"]}.jpg"
+
+# ======================= OLD STUFF ========================================================
 
 def downloadCoverImage1080p(id):
     """Downloads the cover image of the game's cover using image_id. Dimensions: 1920x1080p."""
