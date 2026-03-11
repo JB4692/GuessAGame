@@ -6,7 +6,9 @@ def getNumBaseImages():
 
 
 def getTopNGamesJSON(n):
-    """Returns JSON of top n number games from IGDB based on their rating."""
+    """
+    top n games to get -> all their game data as json (list of dicts)
+    """
 
     base_url = "https://api.igdb.com/v4/games"
     data =  {'headers': {'Client-ID': f'{CLIENT_ID}', 'Authorization': f'Bearer {ACCESS_TOKEN}'},
@@ -23,9 +25,7 @@ def getTopNGamesJSON(n):
 
 def getCoverJSONByID(id):
     """
-    Returns the JSON of the game with passed in id.
-    From IGDB API, pass in the game's "cover" id. 
-    Used to get the image_id field.   
+    "cover" id -> json of game cover data. use image_id for identifier for URL from IGDB 
     """
 
     base_url = "https://api.igdb.com/v4/covers"
@@ -40,6 +40,9 @@ def getCoverJSONByID(id):
 
 
 def getEarliestReleaseDate(ids: list[int]) -> str:
+    """
+    list of release date (non-human readable) -> the earliest release date as string
+    """
     min_id: int = min(ids)
     base_url = "https://api.igdb.com/v4/release_dates"
     data = {'headers': {'Client-ID': f'{CLIENT_ID}', 'Authorization': f'Bearer {ACCESS_TOKEN}'},
@@ -53,6 +56,9 @@ def getEarliestReleaseDate(ids: list[int]) -> str:
 
 
 def getPlatforms(ids: list[int]) -> list[str]:
+    """
+    list of platform ids -> list of platforms as strings/their names
+    """
     listOfPlatforms = []
     
     for id in ids:
@@ -69,6 +75,9 @@ def getPlatforms(ids: list[int]) -> list[str]:
 
 
 def getGenres(ids: list[int]) -> list[str]:
+    """
+    list of genre ids -> list of genres as strings/their names
+    """
     listOfGenres = []
     
     for id in ids:
@@ -86,7 +95,7 @@ def getGenres(ids: list[int]) -> list[str]:
 
 def getCoverURL(id: int) -> str:
     """
-    Returns the URL to the game's cover art in 1080p 
+    cover id -> URL to the game's cover art in 1080p 
     """
 
     base_url = "https://api.igdb.com/v4/covers"
