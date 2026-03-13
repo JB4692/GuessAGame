@@ -42,7 +42,7 @@ const Lifelines = ({
                 <img src={summaryImage} alt="Reroll" />
             </button>
             <button
-                title="Lifeline: Image Minimap"
+                title="COMING SOON: Lifeline: Image Minimap"
                 onClick={() => {
                     console.log("Clicked minimap!");
                 }}
