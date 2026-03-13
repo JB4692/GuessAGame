@@ -78,6 +78,10 @@ const Game = () => {
             <div className="main-container">
                 <div className="game-container">
                     <h1>Guess-A-Game</h1>
+                    <p>
+                        (Can take up to 3 minutes to load images on initial load due to using free
+                        tier of Render for backend.)
+                    </p>
                     <GameImage
                         coverUrl={data?.coverUrl ?? ""}
                         guessCount={guesses.length}
