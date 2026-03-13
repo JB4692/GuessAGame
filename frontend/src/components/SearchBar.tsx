@@ -54,7 +54,7 @@ const SearchBar = ({ options, onGuess, guessCount }: SearchBarProps) => {
                         border: "1px solid #ccc",
                         position: "absolute",
                         background: "white",
-                        width: "100%",
+                        width: "10%",
                     }}
                 >
                     {results.map((result) => (
