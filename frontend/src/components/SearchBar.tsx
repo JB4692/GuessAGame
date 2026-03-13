@@ -4,86 +4,10 @@ import Fuse from "fuse.js";
 interface SearchBarProps {
     options: string[];
     onGuess: (guess: string) => void;
+    guessCount: number;
 }
 
-// const SearchBar = ({ options, onGuess }: SearchBarProps) => {
-//     const [input, setInput] = useState("");
-//     const [results, setResults] = useState<string[]>([]);
-
-//     const fuse = new Fuse(options, {
-//         threshold: 0.4, // 0 = exact match, 1 = match anything
-//     });
-
-//     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//         const value = e.target.value;
-//         setInput(value);
-
-//         if (value.trim() !== "") {
-//             const searchResults = fuse.search(value);
-//             setResults(searchResults.map((r) => r.item));
-//         } else {
-//             setResults([]);
-//         }
-//     };
-
-//     return (
-//         <>
-//             <div>
-//                 <label>Search:</label>
-//                 <input value={input} onChange={handleChange} />
-//                 {results.map((result) => (
-//                     <div
-//                         className="guess"
-//                         key={result}
-//                         onClick={() => {
-//                             onGuess(result);
-//                             setInput("");
-//                             setResults([]);
-//                         }}
-//                     >
-//                         {result}
-//                     </div>
-//                 ))}
-//                 <button
-//                     onClick={() => {
-//                         if (input.trim() !== "") {
-//                             onGuess(input);
-//                             setInput("");
-//                         }
-//                     }}
-//                 >
-//                     Check
-//                 </button>
-//             </div>
-//             <div>
-//                 <label>Search:</label>
-//                 <input
-//                     value={input}
-//                     onChange={(e) => setInput(e.target.value)}
-//                     list="games"
-//                 />
-
-//                 <datalist id="games">
-//                     {options.map((option) => (
-//                         <option key={option} value={option} />
-//                     ))}
-//                 </datalist>
-//                 <button
-//                     onClick={() => {
-//                         if (input.trim() !== "") {
-//                             onGuess(input);
-//                             setInput("");
-//                         }
-//                     }}
-//                 >
-//                     Check
-//                 </button>
-//             </div>
-//         </>
-//     );
-// };
-
-const SearchBar = ({ options, onGuess }: SearchBarProps) => {
+const SearchBar = ({ options, onGuess, guessCount }: SearchBarProps) => {
     const [input, setInput] = useState("");
     const [results, setResults] = useState<string[]>([]);
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -93,16 +17,12 @@ const SearchBar = ({ options, onGuess }: SearchBarProps) => {
     // close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            if (
-                wrapperRef.current &&
-                !wrapperRef.current.contains(e.target as Node)
-            ) {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
                 setResults([]);
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
-        return () =>
-            document.removeEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,18 +36,16 @@ const SearchBar = ({ options, onGuess }: SearchBarProps) => {
     };
 
     const handleSelect = (result: string) => {
-        onGuess(result);
+        if (guessCount < 5) {
+            onGuess(result);
+        }
         setInput("");
         setResults([]);
     };
 
     return (
-        <div ref={wrapperRef} style={{ position: "relative" }}>
-            <input
-                value={input}
-                onChange={handleChange}
-                placeholder="Search for a game..."
-            />
+        <div ref={wrapperRef}>
+            <input value={input} onChange={handleChange} placeholder="Search for a game..." />
             {results.length > 0 && (
                 <div
                     style={{

@@ -1,9 +1,7 @@
 import requests, json, os
 from .config import CLIENT_ID, ACCESS_TOKEN
-
-def getNumBaseImages():
-    return len(os.listdir("./base_imgs/"))
-
+from .database import DBManager
+from typing import Any
 
 def getTopNGamesJSON(n):
     """
@@ -108,7 +106,50 @@ def getCoverURL(id: int) -> str:
 
     return f"https://images.igdb.com/igdb/image/upload/t_1080p/{cover_data[0]["image_id"]}.jpg"
 
+def insertIntoDb(data: Any, dbm: DBManager) -> None:
+    query = """INSERT INTO games (gameId ,
+                              coverUrl,
+                              title ,
+                              genre,
+                              platform ,
+                              releaseDate,
+                              summary ,
+                              rating)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT DO NOTHING""" 
+
+    for game in data:
+
+        releaseDateData = game["release_dates"]
+        platformsData = game["platforms"]
+        genresData = game["genres"]
+
+        releaseDateHumanReadable = getEarliestReleaseDate(releaseDateData)
+
+        platformsList = getPlatforms(platformsData) 
+        platforms = ", ".join(platformsList)
+
+        genresList = getGenres(genresData)
+        genres = ", ".join(genresList)
+
+        coverUrl = getCoverURL(game["cover"])
+
+        params = (game["id"], 
+                coverUrl, 
+                game["name"], 
+                genres, 
+                platforms, 
+                releaseDateHumanReadable, game["summary"], 
+                game["rating"])
+        
+        dbm.execute(query, params)
+        print("Inserted into DB:", game["name"])
+
 # ======================= OLD STUFF ========================================================
+
+def getNumBaseImages():
+    return len(os.listdir("./base_imgs/"))
+
 
 def downloadCoverImage1080p(id):
     """Downloads the cover image of the game's cover using image_id. Dimensions: 1920x1080p."""
@@ -117,6 +158,7 @@ def downloadCoverImage1080p(id):
     data = requests.get(url).content
     with open("./base_imgs/" + id + ".jpg", "wb") as handler:
         handler.write(data)
+
 
 def createGameJSONFile(game_data, cover_data):
     """Uses the lists of json data passed in to create a file of all the game objects."""
@@ -148,4 +190,3 @@ def createGameJSONFile(game_data, cover_data):
     with open("games_data.json", "w") as file:
         json.dump(json_file, file, indent=4)
     
-

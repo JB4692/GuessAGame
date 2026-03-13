@@ -1,5 +1,6 @@
 import sqlite3
-from typing import Optional
+from typing import Optional, Any
+from random import randint
 
 class DBManager:
     def __init__(self, dbPath: str = "database.db"):
@@ -11,15 +12,16 @@ class DBManager:
             self.close()
     
     def connect(self):
-        self.connection = sqlite3.connect(self.dbPath)
+        self.connection = sqlite3.connect(self.dbPath, check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
+        print("Connected to ", self.dbPath)
         return self.connection
 
     def close(self):
         if self.connection:
             self.connection.close()
         
-    def execute(self, query, params) -> sqlite3.Cursor:
+    def execute(self, query: str, params: tuple = ()) -> sqlite3.Cursor:
         """
         Execute INSERT/UPDATE/DELETE queries
         Returns cursor to access lastrowid and rowcount
@@ -52,12 +54,13 @@ class DBManager:
             print("Parameters:", params)
             raise 
     
-    def fetchAllRows(self, query: str, params: tuple = ()) -> list[dict]:
+    def fetchAllRows(self, query: str, params: tuple = ()) -> Optional[list[dict]]:
         """Fetch all rows as a list of dictionaries"""
         try:
             cursor = self.connection.cursor()
             cursor.execute(query, params)
-            return [dict(row) for row in cursor.fetchall()]
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows] if rows else None 
         
         except sqlite3.Error as err:
             self.connection.rollback()
@@ -65,4 +68,32 @@ class DBManager:
             print("Quary:", query)
             print("Parameters:", params)
             raise 
-
+    
+    def getRandomGame(self) -> Optional[dict]:
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT count(*) FROM games")
+            result = cursor.fetchone()
+            
+            query = """SELECT * FROM games WHERE id= ?"""
+            params = (randint(1, result[0]),)
+            row = self.fetchOneRow(query, params)
+            
+            return dict(row) if row else None
+        
+        except sqlite3.Error as err:
+            self.connection.rollback()
+            print("Query failed:", err)
+            raise
+    
+    def getTitles(self) -> Optional[list]:
+        try:
+            query = """SELECT title FROM games"""
+            return self.fetchAllRows(query)
+                    
+        except sqlite3.Error as err:
+            self.connection.rollback()
+            print("Query failed:", err)
+            print("Query:", query)
+            raise
+    
