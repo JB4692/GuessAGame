@@ -5,6 +5,9 @@ import GameImage from "./GameImage.tsx";
 import Lifelines from "./Lifelines.tsx";
 import GameSummary from "./GameSummary.tsx";
 
+const API_URL = import.meta.env.VITE_API_URL;
+// const API_URL = "http://localhost:8000";
+
 interface GameData {
     id: number;
     gameId: number;
@@ -43,7 +46,7 @@ const Game = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetch("http://127.0.0.1:8000/game");
+            const res = await fetch(`${API_URL}/game`);
             const json = await res.json();
             console.log(json);
             setData(json.data);
@@ -51,7 +54,7 @@ const Game = () => {
         fetchData();
 
         const fetchTitles = async () => {
-            const res = await fetch("http://127.0.0.1:8000/titles");
+            const res = await fetch(`${API_URL}/titles`);
             const json = await res.json();
             // console.log("titles json:", json);
             setTitles(json.data.map((item: string) => item));
