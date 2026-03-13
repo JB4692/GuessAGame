@@ -1,6 +1,6 @@
 import requests, json, os
-from .config import CLIENT_ID, ACCESS_TOKEN
-from .database import DBManager
+from config import CLIENT_ID, ACCESS_TOKEN
+from database import DBManager
 from typing import Any
 
 def getTopNGamesJSON(n):

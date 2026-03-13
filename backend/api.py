@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .src.database import DBManager
+from src.database import DBManager
 
 app = FastAPI()
 dbm = DBManager()
