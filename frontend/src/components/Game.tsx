@@ -5,8 +5,9 @@ import GameImage from "./GameImage.tsx";
 import Lifelines from "./Lifelines.tsx";
 import GameSummary from "./GameSummary.tsx";
 
-const API_URL = import.meta.env.VITE_API_URL;
+// const API_URL = import.meta.env.VITE_API_URL;
 // const API_URL = "http://localhost:8000";
+const API_URL = "https://guessagame-awd4.onrender.com";
 
 interface GameData {
     id: number;
